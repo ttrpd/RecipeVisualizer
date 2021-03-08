@@ -1,0 +1,34 @@
+:host ::ng-deep div {
+    border: 2px solid black;
+    text-align: center;
+    margin: 2px;
+}
+
+:host ::ng-deep div p {
+    text-align: center;
+    vertical-align: middle;
+}
+
+:host ::ng-deep div #outer {
+    height: 500px;
+    line-height: 500px;
+}
+
+:host ::ng-deep div .parent {
+    display: flex;
+    border: 0px none;
+    margin: 0px;
+    flex-direction: row;
+}
+
+:host ::ng-deep div .child-left {
+    display: flex;
+    border: 0px none;
+    margin: 0px;
+    flex-direction: column;
+    flex-grow: 4;
+}
+
+:host ::ng-deep div .child-right {
+    flex-grow: 1;
+}
