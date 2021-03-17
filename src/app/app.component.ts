@@ -111,7 +111,7 @@ export class AppComponent implements AfterViewInit{
       // end_pos is at the closing ')'
       if(level == 0) break;
 
-      end_pos++; // [MAY HAVE TO BE INCREMENTED BEFORE BREAKING]
+      end_pos++;
     }
     // handle unclosed parenthesis
     if (level < 0) throw new Error("Unclosed parenthesis");
