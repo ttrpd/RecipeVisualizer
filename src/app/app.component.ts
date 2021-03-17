@@ -11,18 +11,25 @@ export class AppComponent implements AfterViewInit{
 
   recipe = "bake( divide( mix(chocolate, coconut, pecans, mix(eggs, whisk(dry_ingredients), cream(butter, sugars))) ) )";
 
-  add_func_to_dom(func_name:string) {
+  basic_params = "param1, param2, param3, param4";
 
+
+  get_func_dom(func_name:string) {
+    // create parent, left-child, and right-child divs
     var parent = document.createElement("div");
-    parent.setAttribute("class", "parent");
     var child_left = document.createElement("div");
-    child_left.setAttribute("class", "child-left");
     var child_right = document.createElement("div");
+    var child_right_text = document.createElement("p");
+    // set attributes for these divs
+    parent.setAttribute("class", "parent");
+    child_left.setAttribute("class", "child-left");
     child_right.setAttribute("class", "child-right");
     child_right.setAttribute("id", func_name);
-    var child_right_text = document.createElement("p");
     child_right_text.textContent = func_name;
+    // append divs to parent
     child_right.appendChild(child_right_text);
+    parent.appendChild(child_left);
+    parent.appendChild(child_right);
 
     return parent;
   }
@@ -30,20 +37,64 @@ export class AppComponent implements AfterViewInit{
   /**
    * Parses a list of parameters, some of which may be functions
    */
-  parse_params(src:string, dom_el:HTMLDivElement) {
+  parse_params(src:string, func_name:string) {
     var args = [];
     var curr_arg = ""
     var curr_pos = 0
+    
+    // get dom structure for this function and its new parameters
+    var dom = this.get_func_dom(func_name);
+    var params = dom.getElementsByClassName("child-left")[0];
+    
     while (curr_pos < src.length) {
-      // if chracter is ',' && curr_arg not empty, push curr_arg onto args
+      // if chracter is ','
+      if (src.charAt(curr_pos) == ',') {
+        // if curr_arg is empty, throw an error
+        if (!curr_arg) {
+          throw new Error("expected argument before ','");
+        }
+        // push curr_arg onto args
+        args.push(curr_arg);
+        // reset curr_arg
+        curr_arg = "";
+      }
       // if character is '(', parse function starting at curr_pos - curr_arg.length
-      //   set curr_pos to return value from function
+      else if (src.charAt(curr_pos) == '(')  {
+        var parsed = this.parse_func( src.substr(curr_pos - curr_arg.length) );
+        // set curr_pos to return value from function
+        curr_pos = parsed.end;
+        // add parsed dom to parameters dom
+        params.appendChild(parsed.dom);
+      }
+      // else if (src.charAt(curr_pos) == ')') {
+
+      // }
       // else add character to arg
+      else {
+        curr_arg += src.charAt(curr_pos);
+      }
+      
+      curr_pos++;
     }
-    // add args to dom
+
+    // push last arg onto args
+    args.push(curr_arg);
+
+    console.log(args);
+    // construct parameters side of function dom
+    for (var i = 0; i < args.length; i++) {
+      // build a div for each argument and append it to params
+      var param = document.createElement("div");
+
+      var param_name = document.createElement("p");
+      param_name.textContent = args[i];
+      param.appendChild(param_name);
+      params.appendChild(param);
+    }
+    return dom;
   }
 
-  parse_func(src:string, dom_el:HTMLDivElement) {
+  parse_func(src:string) {
     //// get function ////
     var verb = src.substr(0, src.indexOf("("));
     //// get parameters ////
@@ -60,40 +111,27 @@ export class AppComponent implements AfterViewInit{
       // end_pos is at the closing ')'
       if(level == 0) break;
 
-      end_pos++;
+      end_pos++; // [MAY HAVE TO BE INCREMENTED BEFORE BREAKING]
     }
     // handle unclosed parenthesis
     if (level < 0) throw new Error("Unclosed parenthesis");
 
     //// get new parent to dom_el with verb as right child ////
+    var new_parent:HTMLDivElement = this.get_func_dom(verb);
+    //// get function dom by recursing, passing arguments to parse_params ////
+    var dom = this.parse_params(src.substr(src.indexOf("(")+1, end_pos), verb);
     
-    //// get params by recursing, passing arguments to parse_params ////
-    
-    //// add arguments to parent as left child ////
 
-    return end_pos;
+    // return end_pos and parent
+    return {end:end_pos, dom:dom};
   }
 
   ngAfterViewInit () {
-    var parent = document.createElement("div");
-    parent.setAttribute("class", "parent");
-    var child_left = document.createElement("div");
-    child_left.setAttribute("class", "child-left");
-    var child_right = document.createElement("div");
-    child_right.setAttribute("class", "child-right");
-    var child_right_text = document.createElement("p");
-    child_right_text.textContent = "child right";
-    child_right.appendChild(child_right_text);
+    // // this.get_func_dom test
+    // this.outer.nativeElement.appendChild(this.get_func_dom("test"));
 
-    this.outer.nativeElement.appendChild(parent);
-    parent.appendChild(child_left);
-    parent.appendChild(child_right);
-
-    for(var i = 0; i < 3; i++)
-    {
-      var child = document.createElement("div");
-      child.textContent = i.toString();
-      child_left.appendChild(child);
-    }
+    // basic param parsing test
+    var func = this.parse_params(this.basic_params, "test");
+    this.outer.nativeElement.appendChild(func);
   }
 }
