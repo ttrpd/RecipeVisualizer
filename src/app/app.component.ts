@@ -66,9 +66,6 @@ export class AppComponent implements AfterViewInit{
         // add parsed dom to parameters dom
         params.appendChild(parsed.dom);
       }
-      // else if (src.charAt(curr_pos) == ')') {
-
-      // }
       // else add character to arg
       else {
         curr_arg += src.charAt(curr_pos);
