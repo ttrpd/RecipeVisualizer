@@ -67,9 +67,6 @@ export class AppComponent implements AfterViewInit{
         // reset curr_arg
         curr_arg = "";
       }
-      // else if (src.charAt(curr_pos) == ')') {
-
-      // }
       // else add character to arg
       else {
         curr_arg += src.charAt(curr_pos);
