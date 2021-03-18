@@ -11,9 +11,6 @@ export class AppComponent implements AfterViewInit{
 
   recipe = "bake( divide( mix(chocolate, coconut, pecans, mix(eggs, whisk(dry_ingredients), cream(butter, sugars))) ) )";
 
-  basic_params = "param1, param2, param3, param4";
-
-
   get_func_dom(func_name:string) {
     // create parent, left-child, and right-child divs
     var parent = document.createElement("div");
@@ -62,9 +59,13 @@ export class AppComponent implements AfterViewInit{
       else if (src.charAt(curr_pos) == '(')  {
         var parsed = this.parse_func( src.substr(curr_pos - curr_arg.length) );
         // set curr_pos to return value from function
-        curr_pos = parsed.end;
+        curr_pos += parsed.end - curr_arg.length;
+        // parse past the ensuing comma delimiter
+        curr_pos += src.substr(curr_pos).indexOf(",")+1;
         // add parsed dom to parameters dom
         params.appendChild(parsed.dom);
+        // reset curr_arg
+        curr_arg = "";
       }
       // else if (src.charAt(curr_pos) == ')') {
 
@@ -98,8 +99,9 @@ export class AppComponent implements AfterViewInit{
     //// get function ////
     var verb = src.substr(0, src.indexOf("("));
     //// get parameters ////
+    var start_pos = src.indexOf("(") + 1;
     // end_pos starts just after the '('
-    var end_pos = src.indexOf("(") + 1;
+    var end_pos = start_pos;
     // keep track of how many nested functions we've gone through
     var level = -1
     while (end_pos < src.length) {
@@ -116,22 +118,29 @@ export class AppComponent implements AfterViewInit{
     // handle unclosed parenthesis
     if (level < 0) throw new Error("Unclosed parenthesis");
 
-    //// get new parent to dom_el with verb as right child ////
-    var new_parent:HTMLDivElement = this.get_func_dom(verb);
     //// get function dom by recursing, passing arguments to parse_params ////
-    var dom = this.parse_params(src.substr(src.indexOf("(")+1, end_pos), verb);
-    
-
+    var dom = this.parse_params(src.substr(start_pos, end_pos-start_pos), verb);
     // return end_pos and parent
-    return {end:end_pos, dom:dom};
+    return {end:end_pos+1, dom:dom};
   }
 
   ngAfterViewInit () {
     // // this.get_func_dom test
     // this.outer.nativeElement.appendChild(this.get_func_dom("test"));
 
-    // basic param parsing test
-    var func = this.parse_params(this.basic_params, "test");
-    this.outer.nativeElement.appendChild(func);
+    // // basic param parsing test
+    // var basic_params = "param1, param2, param3, param4";
+    // var func = this.parse_params(basic_params, "test");
+    // this.outer.nativeElement.appendChild(func);
+
+    // // basic function parsing test
+    // var basic_function = "func1(param1, param2, param3)";
+    // var func = this.parse_func(basic_function).dom;
+    // this.outer.nativeElement.appendChild(func);
+
+    // // one nested function param parsing test
+    // var one_nested_func = "param1, param2, func1(subparam1, subparam2), param3";
+    // var dom = this.parse_params(one_nested_func, "test_func_name");
+    // this.outer.nativeElement.appendChild(dom);
   }
 }
