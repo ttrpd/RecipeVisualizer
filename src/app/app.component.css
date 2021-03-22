@@ -1,7 +1,29 @@
+button {
+    flex-grow: 1;
+}
+
 :host ::ng-deep div {
     border: 2px solid black;
     text-align: center;
     margin: 2px;
+}
+
+:host ::ng-deep div .child-left {
+    display: flex;
+    border: 0px none;
+    margin: 0px;
+    flex-direction: column;
+    flex-grow: 3;
+}
+
+:host ::ng-deep div .child-right {
+    flex-grow: 1;
+}
+
+#input-container {
+    border: none;
+    display: flex;
+    flex-direction: row;
 }
 
 :host ::ng-deep div p {
@@ -21,14 +43,9 @@
     flex-direction: row;
 }
 
-:host ::ng-deep div .child-left {
-    display: flex;
-    border: 0px none;
-    margin: 0px;
-    flex-direction: column;
+input {
     flex-grow: 4;
+    margin: 2px;
 }
 
-:host ::ng-deep div .child-right {
-    flex-grow: 1;
-}
+

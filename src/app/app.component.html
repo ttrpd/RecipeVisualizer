@@ -10,6 +10,8 @@
     </div>
   </div>
 </div> -->
-<div #outer id="outer">
-
+<div id="input-container">
+  <input type="text" placeholder="enter recipe code" (input)="on_recipe_change($event.target.value)">
+  <button (click)="rebuild_recipe()">Refresh</button>
 </div>
+<div #outer id="outer"></div>

@@ -9,7 +9,7 @@ export class AppComponent implements AfterViewInit{
   title = 'recipe-visualizer';
   @ViewChild('outer') outer: ElementRef;
 
-  recipe = "bake( divide( mix(chocolate, coconut, pecans, mix(eggs, whisk(dry_ingredients), cream(butter, sugars))) ) )";
+  recipe = "bake( divide( mix(chocolate, coconut, pecans, mix(eggs, whisk(flour, baking powder, baking soda, salt), cream(butter, sugars))) ) )";
 
   get_func_dom(func_name:string) {
     // create parent, left-child, and right-child divs
@@ -76,7 +76,8 @@ export class AppComponent implements AfterViewInit{
     }
 
     // push last arg onto args
-    args.push(curr_arg);
+    if (curr_arg)
+      args.push(curr_arg);
 
     console.log(args);
     // construct parameters side of function dom
@@ -121,6 +122,17 @@ export class AppComponent implements AfterViewInit{
     return {end:end_pos+1, dom:dom};
   }
 
+  on_recipe_change(new_recipe:string) {
+    this.recipe = new_recipe;
+    this.rebuild_recipe();
+  }
+
+  rebuild_recipe() {
+    var dom = this.parse_func(this.recipe).dom;
+    this.outer.nativeElement.innerHTML = "";
+    this.outer.nativeElement.appendChild(dom);
+  }
+
   ngAfterViewInit () {
     // // this.get_func_dom test
     // this.outer.nativeElement.appendChild(this.get_func_dom("test"));
@@ -138,6 +150,20 @@ export class AppComponent implements AfterViewInit{
     // // one nested function param parsing test
     // var one_nested_func = "param1, param2, func1(subparam1, subparam2), param3";
     // var dom = this.parse_params(one_nested_func, "test_func_name");
+    // this.outer.nativeElement.appendChild(dom);
+
+    // // empty function test
+    // var one_nested_func = "func()";
+    // var dom = this.parse_func(one_nested_func).dom;
+    // this.outer.nativeElement.appendChild(dom);
+
+    // // empty params test
+    // var one_nested_func = ",,";
+    // var dom = this.parse_params(one_nested_func, "test_func_name");
+    // this.outer.nativeElement.appendChild(dom);
+
+    // // actual recipe test
+    // var dom = this.parse_func(this.recipe).dom;
     // this.outer.nativeElement.appendChild(dom);
   }
 }
